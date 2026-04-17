@@ -8,6 +8,7 @@ import InputField from '../../../components/InputField';
 import { format } from 'date-fns';
 import { motion } from 'framer-motion';
 import Modal from '../../../components/Modal';
+import { showToast } from '../../../utils/toastHelper';
 
 const DailyTaskTracker = () => {
   const {
@@ -45,6 +46,18 @@ const DailyTaskTracker = () => {
   const currentHour = new Date().getHours();
   const productivityScore = calculateProductivityScore();
   const disciplineScore = calculateDisciplineScore();
+
+  const START_HOUR = 0;
+  const END_HOUR = 24;
+  const HOUR_HEIGHT = 200;
+
+  const hours = Array.from(
+    { length: END_HOUR - START_HOUR },
+    (_, i) => i + START_HOUR
+  );
+
+  const activeTasks = dailyPlan.plannedTasks.filter(t => !t.completed);
+  const completedTasks = dailyPlan.plannedTasks.filter(t => t.completed);
 
   const isPlanEmpty = dailyPlan.plannedTasks.length === 0;
 
@@ -107,12 +120,28 @@ const DailyTaskTracker = () => {
 
   // Add habit to plan
   const handleAddHabitToPlan = (habit) => {
+    const start = new Date(`2000-01-01T${habit.startTime}:00`);
+    let endTime = habit.endTime;
+
+    if (!endTime) {
+      const newEnd = new Date(start.getTime() + 30 * 60 * 1000); // 30 min
+      endTime = format(newEnd, 'HH:mm');
+    } else {
+      const end = new Date(`2000-01-01T${endTime}:00`);
+      const diffMinutes = (end - start) / (1000 * 60);
+
+      if (diffMinutes < 30) {
+        const newEnd = new Date(start.getTime() + 30 * 60 * 1000);
+        endTime = format(newEnd, 'HH:mm');
+        showToast({ message: "Minimum 30 minutes applied" });
+      }
+    }
     addToDailyPlan({
       source: 'habit',
       habitId: habit.id,
       title: habit.name,
       startTime: habit.startTime,
-      endTime: habit.endTime || format(new Date(`2000-01-01T${habit.startTime}:00`).getTime() + 3600000, 'HH:mm'),
+      endTime: endTime,
       completed: false,
       isImportant: false
     });
@@ -123,6 +152,16 @@ const DailyTaskTracker = () => {
     e.preventDefault();
     if (!manualTaskForm.title.trim()) {
       alert('Please enter a task title');
+      return;
+    }
+    const start = new Date(`2000-01-01T${manualTaskForm.startTime}:00`);
+    const end = new Date(`2000-01-01T${manualTaskForm.endTime}:00`);
+
+    const diffMinutes = (end - start) / (1000 * 60);
+
+    if (diffMinutes < 30) {
+      // alert("Minimum task duration should be 30 minutes");
+      showToast({ message: "Minimum task duration should be 30 minutes", status: "error" });
       return;
     }
 
@@ -148,6 +187,17 @@ const DailyTaskTracker = () => {
   const handleAddTaskToPlan = async () => {
     if (!selectedTask) return;
 
+    const start = new Date(`2000-01-01T${timeForm.startTime}:00`);
+    const end = new Date(`2000-01-01T${timeForm.endTime}:00`);
+
+    const diffMinutes = (end - start) / (1000 * 60);
+
+    if (diffMinutes < 30) {
+      // alert("Minimum task duration should be 30 minutes");
+      showToast({ message: "Minimum task duration should be 30 minutes", status: "error" });
+      return;
+    }
+
     await addToDailyPlan({
       source: 'task',
       taskId: selectedTask.id,
@@ -158,7 +208,6 @@ const DailyTaskTracker = () => {
       isImportant: selectedTask.isImportant
     });
 
-    // reset
     setSelectedTask(null);
     setShowTimeModal(false);
     setActiveTab('timeline');
@@ -226,8 +275,8 @@ const DailyTaskTracker = () => {
                         <button
                           onClick={() => toggleDailyPlanTaskCompletion(item.id)}
                           className={`p-2 rounded-lg transition-all ${item.completed
-                              ? 'bg-green-500/20 text-green-400'
-                              : 'bg-gray-700/50 text-gray-400 hover:bg-green-500/20 hover:text-green-400'
+                            ? 'bg-green-500/20 text-green-400'
+                            : 'bg-gray-700/50 text-gray-400 hover:bg-green-500/20 hover:text-green-400'
                             }`}
                           data-testid={`complete-daily-task-${item.id}`}
                         >
@@ -311,8 +360,8 @@ const DailyTaskTracker = () => {
             <button
               onClick={() => setActiveTab('timeline')}
               className={`flex-1 py-3 px-4 rounded-lg font-semibold transition-all ${activeTab === 'timeline'
-                  ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-lg'
-                  : 'bg-white/5 text-gray-400 hover:bg-white/10'
+                ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-lg'
+                : 'bg-white/5 text-gray-400 hover:bg-white/10'
                 }`}
               data-testid="timeline-tab"
             >
@@ -322,8 +371,8 @@ const DailyTaskTracker = () => {
             <button
               onClick={() => setActiveTab('add')}
               className={`flex-1 py-3 px-4 rounded-lg font-semibold transition-all ${activeTab === 'add'
-                  ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-lg'
-                  : 'bg-white/5 text-gray-400 hover:bg-white/10'
+                ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-lg'
+                : 'bg-white/5 text-gray-400 hover:bg-white/10'
                 }`}
               data-testid="add-tasks-tab"
             >
@@ -377,7 +426,7 @@ const DailyTaskTracker = () => {
                   </Card>
 
                   {/* Timeline Sections */}
-                  <TimelineSection
+                  {/* <TimelineSection
                     title="Morning"
                     tasks={morningTasks}
                     icon={<span className="text-2xl">🌅</span>}
@@ -396,7 +445,208 @@ const DailyTaskTracker = () => {
                     tasks={eveningTasks}
                     icon={<span className="text-2xl">🌙</span>}
                     gradient="from-indigo-400 to-purple-500"
-                  />
+                  /> */}
+                  {/* NEW TIME GRID VIEW - POLISHED */}
+                  <div className="flex relative mt-6 bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl overflow-hidden">
+
+                    {/* LEFT TIME COLUMN */}
+                    <div className="w-20 bg-black/30 border-r border-white/10">
+                      {hours.map(hour => (
+                        <div
+                          key={hour}
+                          className="h-[200px] flex items-start justify-end pr-3 pt-1 text-xs text-gray-400 border-b border-white/5"
+                        >
+                          {`${hour.toString().padStart(2, '0')}:00`}
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* RIGHT GRID AREA */}
+                    <div className="flex-1 relative">
+
+                      {/* GRID BACKGROUND */}
+                      <div className="absolute inset-0">
+                        {hours.map(hour => (
+                          <div
+                            key={hour}
+                            className="h-[200px] border-b border-white/5"
+                          />
+                        ))}
+                      </div>
+
+                      {/* SUBTLE VERTICAL GRID LINES */}
+                      <div className="absolute inset-0 grid grid-cols-4 opacity-20">
+                        <div className="border-r border-white/10"></div>
+                        <div className="border-r border-white/10"></div>
+                        <div className="border-r border-white/10"></div>
+                        <div></div>
+                      </div>
+
+                      {/* EMPTY STATE (temporary) */}
+                      {dailyPlan.plannedTasks.length === 0 && (
+                        <div className="absolute inset-0 flex items-center justify-center">
+                          <p className="text-gray-500 text-sm">
+                            No tasks scheduled yet
+                          </p>
+                        </div>
+                      )}
+
+                      {/* (Tasks will come next step) */}
+                      {activeTasks.map((task) => {
+                        const [sh, sm] = task.startTime.split(':').map(Number);
+                        const [eh, em] = task.endTime.split(':').map(Number);
+
+                        const startInHours = sh + sm / 60;
+                        const endInHours = eh + em / 60;
+
+                        const top = (startInHours - START_HOUR) * HOUR_HEIGHT;
+                        const height = (endInHours - startInHours) * HOUR_HEIGHT;
+
+                        // 🔥 Adaptive UI logic
+                        const isSmall = height < 60;
+                        const isMedium = height >= 60 && height < 100;
+
+                        return (
+                          <div
+                            key={task.id}
+                            className={`group absolute left-4 right-4 pointer-events-auto rounded-xl p-2 backdrop-blur-lg border shadow-lg transition-all
+        ${task.completed
+                                ? 'opacity-50 border-gray-500'
+                                : 'border-indigo-400 hover:scale-[1.02]'
+                              }`}
+                            style={{
+                              top: `${top}px`,
+                              height: `${height}px`,
+                              backgroundColor:
+                                task.source === 'task'
+                                  ? 'rgba(59,130,246,0.3)'
+                                  : task.source === 'habit'
+                                    ? 'rgba(34,197,94,0.3)'
+                                    : 'rgba(168,85,247,0.3)'
+                            }}
+                          >
+
+                            {/* 🔥 ACTION BUTTONS (FIXED) */}
+                            <div
+                              className={`absolute top-1 right-1 flex gap-1 transition z-20
+    ${height < 80 ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}
+  `}
+                            >
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  toggleDailyPlanTaskCompletion(task.id);
+                                }}
+                                className={`p-2 rounded ${task.completed
+                                  ? 'bg-green-500/20 text-green-400'
+                                  : 'bg-black/40 text-gray-300 hover:bg-green-500/20 hover:text-green-400'
+                                  }`}
+                              >
+                                <CheckCircle2 size={14} />
+                              </button>
+
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  removeFromDailyPlan(task.id);
+                                }}
+                                className="p-2 rounded bg-black/40 text-gray-300 hover:bg-red-500/20 hover:text-red-400"
+                              >
+                                <X size={14} />
+                              </button>
+                            </div>
+
+                            {/* 🔥 CONTENT */}
+                            <div className="h-full flex flex-col justify-start overflow-hidden">
+
+                              {/* TITLE (ALWAYS VISIBLE) */}
+                              <p className={`text-sm font-semibold truncate ${task.completed
+                                ? 'line-through text-gray-400'
+                                : 'text-white'
+                                }`}>
+                                {task.title}
+                              </p>
+
+                              {/* TIME (ONLY IF SPACE AVAILABLE) */}
+                              {!isSmall && (
+                                <p className="text-xs text-gray-300 mt-1 truncate">
+                                  {task.startTime} - {task.endTime}
+                                </p>
+                              )}
+
+                              {/* BADGES (ONLY IF LARGE BLOCK) */}
+                              {!isSmall && !isMedium && (
+                                <div className="flex gap-2 mt-1 flex-wrap">
+                                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-white/10 border border-white/10 text-gray-300">
+                                    {task.source}
+                                  </span>
+
+                                  {task.isImportant && (
+                                    <span className="text-[10px] px-2 py-0.5 rounded-full bg-orange-500/20 text-orange-400">
+                                      Important
+                                    </span>
+                                  )}
+                                </div>
+                              )}
+
+                            </div>
+                          </div>
+                        );
+                      })}
+
+                    </div>
+                  </div>
+                  {completedTasks.length > 0 && (
+                    <div className="mt-8">
+
+                      {/* HEADER */}
+                      <h3 className="text-lg font-semibold text-gray-300 mb-4">
+                        Completed Tasks ({completedTasks.length})
+                      </h3>
+
+                      {/* LIST */}
+                      <div className="space-y-3">
+                        {completedTasks.map(task => (
+                          <div
+                            key={task.id}
+                            className="flex items-center justify-between p-4 rounded-xl bg-white/5 border border-white/10 backdrop-blur-lg"
+                          >
+
+                            {/* LEFT */}
+                            <div>
+                              <p className="text-gray-400 line-through">
+                                {task.title}
+                              </p>
+                              <p className="text-xs text-gray-500">
+                                {task.startTime} - {task.endTime}
+                              </p>
+                            </div>
+
+                            {/* ACTIONS */}
+                            <div className="flex gap-2">
+
+                              {/* UNDO (bring back to timeline) */}
+                              <button
+                                onClick={() => toggleDailyPlanTaskCompletion(task.id)}
+                                className="p-2 rounded-lg bg-green-500/20 text-green-400 hover:bg-green-500/30"
+                              >
+                                <CheckCircle2 size={18} />
+                              </button>
+
+                              {/* DELETE */}
+                              <button
+                                onClick={() => removeFromDailyPlan(task.id)}
+                                className="p-2 rounded-lg bg-red-500/20 text-red-400 hover:bg-red-500/30"
+                              >
+                                <X size={18} />
+                              </button>
+
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </>
               )}
             </motion.div>
@@ -414,8 +664,8 @@ const DailyTaskTracker = () => {
                 <button
                   onClick={() => setAddMode('tasks')}
                   className={`flex-1 py-2 px-3 rounded-lg text-sm font-medium transition-all ${addMode === 'tasks'
-                      ? 'bg-indigo-600 text-white'
-                      : 'bg-white/5 text-gray-400 hover:bg-white/10'
+                    ? 'bg-indigo-600 text-white'
+                    : 'bg-white/5 text-gray-400 hover:bg-white/10'
                     }`}
                   data-testid="add-from-tasks-tab"
                 >
@@ -424,8 +674,8 @@ const DailyTaskTracker = () => {
                 <button
                   onClick={() => setAddMode('habits')}
                   className={`flex-1 py-2 px-3 rounded-lg text-sm font-medium transition-all ${addMode === 'habits'
-                      ? 'bg-indigo-600 text-white'
-                      : 'bg-white/5 text-gray-400 hover:bg-white/10'
+                    ? 'bg-indigo-600 text-white'
+                    : 'bg-white/5 text-gray-400 hover:bg-white/10'
                     }`}
                   data-testid="add-from-habits-tab"
                 >
@@ -434,8 +684,8 @@ const DailyTaskTracker = () => {
                 <button
                   onClick={() => setAddMode('manual')}
                   className={`flex-1 py-2 px-3 rounded-lg text-sm font-medium transition-all ${addMode === 'manual'
-                      ? 'bg-indigo-600 text-white'
-                      : 'bg-white/5 text-gray-400 hover:bg-white/10'
+                    ? 'bg-indigo-600 text-white'
+                    : 'bg-white/5 text-gray-400 hover:bg-white/10'
                     }`}
                   data-testid="create-manual-task-tab"
                 >
@@ -445,8 +695,8 @@ const DailyTaskTracker = () => {
 
               {/* Add from Tasks */}
               {addMode === 'tasks' && (
-                <Card>
-                  <h3 className="text-lg font-semibold text-white mb-4">Select Tasks to Add</h3>
+                <Card className='bg-white/5 border border-white/10 '>
+                  <h3 className="text-lg font-semibold text-white mb-4">Select Task to Add</h3>
                   {availableTasks.length > 0 ? (
                     <>
                       <div className="space-y-2 mb-6 max-h-96 overflow-y-auto">
@@ -459,10 +709,7 @@ const DailyTaskTracker = () => {
                               setShowTimeModal(true);
                             }}
                             whileTap={{ scale: 0.98 }}
-                            className={`p-3 rounded-lg cursor-pointer transition-all ${selectedTaskIds.includes(task.id)
-                                ? 'bg-indigo-600/30 border border-indigo-500'
-                                : 'bg-gray-700/50 hover:bg-gray-700'
-                              }`}
+                            className="p-5 mx-3 rounded-lg cursor-pointer transition-all hover:bg-white/20 border border-white/20 hover:border-2 hover:border-white/25 bg-white/15 hover:bg-gray-700"
                             data-testid={`select-task-${task.id}`}
                           >
                             <div className="flex items-center gap-3">
