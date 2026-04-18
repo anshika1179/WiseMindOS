@@ -8,6 +8,7 @@ const plannedTaskSchema = new mongoose.Schema({
     startTime: { type: String, required: true },
     endTime: { type: String, required: true },
     completed: { type: Boolean, default: false },
+    completedAt: { type: Date, default: null },
     isImportant: { type: Boolean, default: false }
 }, { _id: true });
 

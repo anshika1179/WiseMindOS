@@ -222,87 +222,87 @@ const DailyTaskTracker = () => {
     return { label: 'Manual', color: 'bg-purple-500/20 text-purple-400 border-purple-500/30' };
   };
 
-  const TimelineSection = ({ title, tasks: sectionTasks, icon, gradient }) => {
-    if (sectionTasks.length === 0) return null;
+  // const TimelineSection = ({ title, tasks: sectionTasks, icon, gradient }) => {
+  //   if (sectionTasks.length === 0) return null;
 
-    return (
-      <div className="mb-6">
-        <div className="flex items-center gap-2 mb-4">
-          {icon}
-          <h3 className={`text-lg font-semibold bg-gradient-to-r ${gradient} bg-clip-text text-transparent`}>
-            {title}
-          </h3>
-          <span className="text-sm text-gray-500">({sectionTasks.length})</span>
-        </div>
-        <div className="space-y-3 pl-6 border-l-2 border-gray-700">
-          {sectionTasks.map((item, index) => (
-            <motion.div
-              key={item.id}
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: index * 0.05 }}
-              className="relative"
-            >
-              {/* Timeline dot */}
-              <div className="absolute -left-[27px] top-4 w-3 h-3 rounded-full bg-indigo-500 border-2 border-gray-900" />
+  //   return (
+  //     <div className="mb-6">
+  //       <div className="flex items-center gap-2 mb-4">
+  //         {icon}
+  //         <h3 className={`text-lg font-semibold bg-gradient-to-r ${gradient} bg-clip-text text-transparent`}>
+  //           {title}
+  //         </h3>
+  //         <span className="text-sm text-gray-500">({sectionTasks.length})</span>
+  //       </div>
+  //       <div className="space-y-3 pl-6 border-l-2 border-gray-700">
+  //         {sectionTasks.map((item, index) => (
+  //           <motion.div
+  //             key={item.id}
+  //             initial={{ opacity: 0, x: -20 }}
+  //             animate={{ opacity: 1, x: 0 }}
+  //             transition={{ delay: index * 0.05 }}
+  //             className="relative"
+  //           >
+  //             {/* Timeline dot */}
+  //             <div className="absolute -left-[27px] top-4 w-3 h-3 rounded-full bg-indigo-500 border-2 border-gray-900" />
 
-              <Card className={`${item.completed ? 'opacity-60' : ''} bg-white/5 backdrop-blur-lg border border-white/10 hover:border-indigo-500/50 transition-all`}>
-                <div className="flex items-start gap-3">
-                  {/* Time */}
-                  <div className="text-center min-w-[60px]">
-                    <p className="text-xs text-indigo-400 font-semibold">{item.startTime}</p>
-                    <p className="text-xs text-gray-500">{item.endTime}</p>
-                  </div>
+  //             <Card className={`${item.completed ? 'opacity-60' : ''} bg-white/5 backdrop-blur-lg border border-white/10 hover:border-indigo-500/50 transition-all`}>
+  //               <div className="flex items-start gap-3">
+  //                 {/* Time */}
+  //                 <div className="text-center min-w-[60px]">
+  //                   <p className="text-xs text-indigo-400 font-semibold">{item.startTime}</p>
+  //                   <p className="text-xs text-gray-500">{item.endTime}</p>
+  //                 </div>
 
-                  {/* Content */}
-                  <div className="flex-1">
-                    <div className="flex items-start justify-between gap-3 mb-2">
-                      <div className="flex-1">
-                        <h4 className={`font-medium ${item.completed ? 'line-through text-gray-500' : 'text-white'}`}>
-                          {item.title}
-                        </h4>
-                        <div className="flex items-center gap-2 mt-1">
-                          <span className={`text-xs px-2 py-0.5 rounded-full border ${getSourceBadge(item.source).color}`}>
-                            {getSourceBadge(item.source).label}
-                          </span>
-                          {item.isImportant && (
-                            <span className="text-xs px-2 py-0.5 rounded-full bg-orange-500/20 text-orange-400 border border-orange-500/30">
-                              Important
-                            </span>
-                          )}
-                        </div>
-                      </div>
+  //                 {/* Content */}
+  //                 <div className="flex-1">
+  //                   <div className="flex items-start justify-between gap-3 mb-2">
+  //                     <div className="flex-1">
+  //                       <h4 className={`font-medium ${item.completed ? 'line-through text-gray-500' : 'text-white'}`}>
+  //                         {item.title}
+  //                       </h4>
+  //                       <div className="flex items-center gap-2 mt-1">
+  //                         <span className={`text-xs px-2 py-0.5 rounded-full border ${getSourceBadge(item.source).color}`}>
+  //                           {getSourceBadge(item.source).label}
+  //                         </span>
+  //                         {item.isImportant && (
+  //                           <span className="text-xs px-2 py-0.5 rounded-full bg-orange-500/20 text-orange-400 border border-orange-500/30">
+  //                             Important
+  //                           </span>
+  //                         )}
+  //                       </div>
+  //                     </div>
 
-                      {/* Actions */}
-                      <div className="flex items-center gap-2">
-                        <button
-                          onClick={() => toggleDailyPlanTaskCompletion(item.id)}
-                          className={`p-2 rounded-lg transition-all ${item.completed
-                            ? 'bg-green-500/20 text-green-400'
-                            : 'bg-gray-700/50 text-gray-400 hover:bg-green-500/20 hover:text-green-400'
-                            }`}
-                          data-testid={`complete-daily-task-${item.id}`}
-                        >
-                          <CheckCircle2 size={20} />
-                        </button>
-                        <button
-                          onClick={() => removeFromDailyPlan(item.id)}
-                          className="p-2 rounded-lg bg-gray-700/50 text-gray-400 hover:bg-red-500/20 hover:text-red-400 transition-all"
-                          data-testid={`remove-daily-task-${item.id}`}
-                        >
-                          <X size={20} />
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </Card>
-            </motion.div>
-          ))}
-        </div>
-      </div>
-    );
-  };
+  //                     {/* Actions */}
+  //                     <div className="flex items-center gap-2">
+  //                       <button
+  //                         onClick={() => toggleDailyPlanTaskCompletion(item.id)}
+  //                         className={`p-2 rounded-lg transition-all ${item.completed
+  //                           ? 'bg-green-500/20 text-green-400'
+  //                           : 'bg-gray-700/50 text-gray-400 hover:bg-green-500/20 hover:text-green-400'
+  //                           }`}
+  //                         data-testid={`complete-daily-task-${item.id}`}
+  //                       >
+  //                         <CheckCircle2 size={20} />
+  //                       </button>
+  //                       <button
+  //                         onClick={() => removeFromDailyPlan(item.id)}
+  //                         className="p-2 rounded-lg bg-gray-700/50 text-gray-400 hover:bg-red-500/20 hover:text-red-400 transition-all"
+  //                         data-testid={`remove-daily-task-${item.id}`}
+  //                       >
+  //                         <X size={20} />
+  //                       </button>
+  //                     </div>
+  //                   </div>
+  //                 </div>
+  //               </div>
+  //             </Card>
+  //           </motion.div>
+  //         ))}
+  //       </div>
+  //     </div>
+  //   );
+  // };
 
   return (
     <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.8 }}>

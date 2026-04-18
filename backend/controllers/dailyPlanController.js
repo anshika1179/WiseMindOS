@@ -179,31 +179,70 @@ const toggleDailyPlanTask = async (req, res) => {
                 task.completed = !task.completed;
                 await task.save();
                 plannedTask.completed = task.completed;
+                plannedTask.completedAt = task.completed ? new Date() : null;
             }
         } else if (plannedTask.source === 'habit' && plannedTask.habitId) {
             const habit = await habitModel.findOne({ _id: plannedTask.habitId, userId });
             if (habit) {
                 // Check if already completed today
+                // if (habit.lastCompleted && isToday(habit.lastCompleted)) {
+                //     // Already completed - do nothing or toggle off
+                //     if (plannedTask.completed) {
+                //         plannedTask.completed = false;
+                //     }
+                // } else {
+                //     // Complete habit with streak logic
+                //     if (habit.lastCompleted && isYesterday(habit.lastCompleted)) {
+                //         habit.streak += 1;
+                //     } else {
+                //         habit.streak = 1;
+                //     }
+                //     habit.lastCompleted = new Date();
+                //     await habit.save();
+                //     plannedTask.completed = true;
+                //     plannedTask.completedAt = new Date();
+                // }
+
                 if (habit.lastCompleted && isToday(habit.lastCompleted)) {
-                    // Already completed - do nothing or toggle off
-                    if (plannedTask.completed) {
-                        plannedTask.completed = false;
+                    // 🔁 UNTOGGLE (VERY IMPORTANT FIX)
+
+                    plannedTask.completed = false;
+                    plannedTask.completedAt = null;
+
+                    // 🔁 rollback streak
+                    habit.streak = habit.streak > 0 ? habit.streak - 1 : 0;
+
+                    // 🔁 fix lastCompleted
+                    if (habit.streak === 0) {
+                        habit.lastCompleted = null;
+                    } else {
+                        const yesterday = new Date();
+                        yesterday.setDate(yesterday.getDate() - 1);
+                        habit.lastCompleted = yesterday;
                     }
+
+                    await habit.save();
+
                 } else {
-                    // Complete habit with streak logic
+                    // ✅ COMPLETE habit
+
                     if (habit.lastCompleted && isYesterday(habit.lastCompleted)) {
                         habit.streak += 1;
                     } else {
                         habit.streak = 1;
                     }
+
                     habit.lastCompleted = new Date();
                     await habit.save();
+
                     plannedTask.completed = true;
+                    plannedTask.completedAt = new Date();
                 }
             }
         } else if (plannedTask.source === 'manual') {
             // Manual tasks: only toggle in DailyPlan
             plannedTask.completed = !plannedTask.completed;
+            plannedTask.completedAt = plannedTask.completed ? new Date() : null;
         }
 
         await dailyPlan.save();

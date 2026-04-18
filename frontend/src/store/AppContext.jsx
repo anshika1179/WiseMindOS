@@ -186,7 +186,8 @@ export const AppProvider = ({ children }) => {
             ...pt,
             id: pt._id,
             taskId: pt.taskId || null,
-            habitId: pt.habitId || null
+            habitId: pt.habitId || null,
+            completedAt: pt.completedAt || null
           }))
         };
         setDailyPlan(planData);
@@ -353,7 +354,8 @@ export const AppProvider = ({ children }) => {
               ...response.dailyPlan,
               plannedTasks: response.dailyPlan.plannedTasks.map(pt => ({
                 ...pt,
-                id: pt._id
+                id: pt._id,
+                completedAt: pt.completedAt || null
               }))
             };
             setDailyPlan(updatedPlan);
@@ -576,7 +578,8 @@ export const AppProvider = ({ children }) => {
               ...dailyPlanRes.dailyPlan,
               plannedTasks: dailyPlanRes.dailyPlan.plannedTasks.map(pt => ({
                 ...pt,
-                id: pt._id
+                id: pt._id,
+                completedAt: pt.completedAt || null
               }))
             };
 
@@ -653,21 +656,44 @@ export const AppProvider = ({ children }) => {
   };
 
   const calculateProductivityScore = () => {
-    const today = new Date().toDateString();
-    const todayTasks = tasks.filter(task =>
-      new Date(task.createdAt).toDateString() === today
-    );
+    const todayTasks = dailyPlan?.plannedTasks || [];
 
     if (todayTasks.length === 0) return 0;
     const completed = todayTasks.filter(task => task.completed).length;
     return Math.round((completed / todayTasks.length) * 100);
   };
 
+  // const calculateDisciplineScore = () => {
+  //   if (habits.length === 0) return 0;
+  //   const totalStreak = habits.reduce((sum, habit) => sum + habit.streak, 0);
+  //   const maxPossibleStreak = habits.length * 21;
+  //   return Math.min(Math.round((totalStreak / maxPossibleStreak) * 100), 100);
+  // };
+
   const calculateDisciplineScore = () => {
-    if (habits.length === 0) return 0;
-    const totalStreak = habits.reduce((sum, habit) => sum + habit.streak, 0);
-    const maxPossibleStreak = habits.length * 21;
-    return Math.min(Math.round((totalStreak / maxPossibleStreak) * 100), 100);
+    const tasks = dailyPlan?.plannedTasks || [];
+
+    if (tasks.length === 0) return 0;
+
+    let onTimeCompleted = 0;
+
+    tasks.forEach(task => {
+      if (task.completed && task.completedAt) {
+        const completedTime = new Date(task.completedAt);
+
+        const completedMinutes =
+          completedTime.getHours() * 60 + completedTime.getMinutes();
+
+        const [eh, em] = task.endTime.split(':').map(Number);
+        const endMinutes = eh * 60 + em;
+
+        if (completedMinutes <= endMinutes) {
+          onTimeCompleted++;
+        }
+      }
+    });
+
+    return Math.round((onTimeCompleted / tasks.length) * 100);
   };
 
   const setDailyTasksList = (tasksList) => {
@@ -708,7 +734,8 @@ export const AppProvider = ({ children }) => {
           ...response.dailyPlan,
           plannedTasks: response.dailyPlan.plannedTasks.map(pt => ({
             ...pt,
-            id: pt._id
+            id: pt._id,
+            completedAt: pt.completedAt || null
           }))
         };
         setDailyPlan(updatedPlan);
@@ -740,7 +767,8 @@ export const AppProvider = ({ children }) => {
           ...response.dailyPlan,
           plannedTasks: response.dailyPlan.plannedTasks.map(pt => ({
             ...pt,
-            id: pt._id
+            id: pt._id,
+            completedAt: pt.completedAt || null
           }))
         };
         setDailyPlan(updatedPlan);
@@ -783,7 +811,8 @@ export const AppProvider = ({ children }) => {
           ...response.dailyPlan,
           plannedTasks: response.dailyPlan.plannedTasks.map(pt => ({
             ...pt,
-            id: pt._id
+            id: pt._id,
+            completedAt: pt.completedAt || null
           }))
         };
         setDailyPlan(updatedPlan);
@@ -823,7 +852,8 @@ export const AppProvider = ({ children }) => {
           ...response.dailyPlan,
           plannedTasks: response.dailyPlan.plannedTasks.map(pt => ({
             ...pt,
-            id: pt._id
+            id: pt._id,
+            completedAt: pt.completedAt || null
           }))
         };
         setDailyPlan(updatedPlan);
@@ -832,31 +862,6 @@ export const AppProvider = ({ children }) => {
         const toggledItem = response.dailyPlan.plannedTasks.find(pt => pt._id === id);
         if (!toggledItem) return;
 
-
-        // SYNC: Update source
-        // if (item.source === 'task' && item.taskId) {
-        //   // Sync with main tasks
-        //   setTasks(tasks.map(task =>
-        //     task.id === item.taskId
-        //       ? { ...task, completed: !task.completed }
-        //       : task
-        //   ));
-        //   // Legacy sync
-        //   setDailyTasks(dailyTasks.map(task =>
-        //     task.id === item.taskId
-        //       ? { ...task, completed: !task.completed }
-        //       : task
-        //   ));
-        // } else if (item.source === 'habit' && item.habitId) {
-        //   // Sync with habits
-        //   const habit = habits.find(h => h.id === item.habitId);
-        //   if (habit && !item.completed) {
-        //     // Mark as completed today
-        //     const today = new Date().toISOString().split('T')[0];
-        //     setHabits(habits.map(h =>
-        //       h.id === item.habitId
-        //         ? {
-        // GLOBAL SYNC: Update source arrays based on backend changes
         if (toggledItem.source === 'task' && toggledItem.taskId) {
           // Refetch tasks to get updated completion status
           const tasksRes = await taskAPI.getAll();
@@ -873,15 +878,6 @@ export const AppProvider = ({ children }) => {
           if (habitsRes.success) {
             const habitsData = habitsRes.habits.map(h => ({
               ...h,
-              //       lastCompleted: today,
-              //       streak: h.lastCompleted &&
-              //         new Date(h.lastCompleted).toISOString().split('T')[0] ===
-              //         new Date(Date.now() - 86400000).toISOString().split('T')[0]
-              //         ? h.streak + 1
-              //         : 1
-              //     }
-              //     : h
-              // ));
               id: h._id
             }));
             setHabits(habitsData);
