@@ -1,7 +1,6 @@
 import { createContext, useContext, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { goalAPI, projectAPI, taskAPI, habitAPI, dailyPlanAPI, statsAPI } from '../api/apiService';
-// import { toast } from 'react-toastify';
 import { showToast } from '../utils/toastHelper';
 
 const AppContext = createContext();
@@ -91,38 +90,6 @@ export const AppProvider = ({ children }) => {
     return saved ? JSON.parse(saved) : { productivity: 0, discipline: 0 };
   });
 
-  // Persist to localStorage whenever state changes (HYBRID - keep for now)
-  // useEffect(() => {
-  //   localStorage.setItem('wisemind_goals', JSON.stringify(goals));
-  // }, [goals]);
-
-  // useEffect(() => {
-  //   localStorage.setItem('wisemind_projects', JSON.stringify(projects));
-  // }, [projects]);
-
-  // useEffect(() => {
-  //   localStorage.setItem('wisemind_tasks', JSON.stringify(tasks));
-  // }, [tasks]);
-
-  // useEffect(() => {
-  //   localStorage.setItem('wisemind_habits', JSON.stringify(habits));
-  // }, [habits]);
-
-  // useEffect(() => {
-  //   localStorage.setItem('wisemind_daily_tasks', JSON.stringify(dailyTasks));
-  // }, [dailyTasks]);
-
-  //  useEffect(() => {
-  //   localStorage.setItem('wisemind_daily_plan', JSON.stringify(dailyPlan));
-  // }, [dailyPlan]);
-
-  // useEffect(() => {
-  //   localStorage.setItem('wisemind_scores', JSON.stringify(scores));
-  // }, [scores]);
-
-  // REMOVED: localStorage persistence (backend is now source of truth)
-  // Only token and user are persisted locally
-
 
 
 
@@ -202,8 +169,6 @@ export const AppProvider = ({ children }) => {
     }
   };
 
-  // Add Goal
-  // const addGoal = (goal) => {
 
   // Add Goal - Backend Integration
   const addGoal = async (goal) => {
@@ -211,11 +176,6 @@ export const AppProvider = ({ children }) => {
       const response = await goalAPI.create(goal);
       if (response.success) {
         const newGoal = {
-          // id: Date.now().toString(),
-          // title: goal.title,
-          // type: goal.type,
-          // createdAt: new Date().toISOString(),
-          // ...goal
           ...response.goal,
           id: response.goal._id
         };
@@ -233,21 +193,12 @@ export const AppProvider = ({ children }) => {
     }
   };
 
-  // Add Project
-  // const addProject = (project) => {
-
   // Add Project - Backend Integration
   const addProject = async (project) => {
     try {
       const response = await projectAPI.create(project);
       if (response.success) {
         const newProject = {
-          // id: Date.now().toString(),
-          // title: project.title,
-          // goalId: project.goalId || null,
-          // deadline: project.deadline,
-          // createdAt: new Date().toISOString(),
-          // ...project
           ...response.project,
           id: response.project._id
         };
@@ -265,24 +216,12 @@ export const AppProvider = ({ children }) => {
     }
   };
 
-  // Add Task
-  // const addTask = (task) => {
   // Add Task - Backend Integration
   const addTask = async (task) => {
     try {
       const response = await taskAPI.create(task);
       if (response.success) {
         const newTask = {
-          // id: Date.now().toString() + Math.random(),
-          // title: task.title,
-          // deadline: task.deadline,
-          // completed: false,
-          // goalId: task.goalId || null,
-          // projectId: task.projectId || null,
-          // isImportant: task.isImportant || false,
-          // createdFrom: task.createdFrom || 'manual',
-          // createdAt: new Date().toISOString(),
-          // ...task
           ...response.task,
           id: response.task._id
         };
@@ -300,24 +239,12 @@ export const AppProvider = ({ children }) => {
     }
   };
 
-  // Add Habit
-  // const addHabit = (habit) => {
   // Add Habit - Backend Integration
   const addHabit = async (habit) => {
     try {
       const response = await habitAPI.create(habit);
       if (response.success) {
         const newHabit = {
-          // id: Date.now().toString(),
-          // name: habit.name,
-          // type: habit.type,
-          // startTime: habit.startTime,
-          // endTime: habit.endTime,
-          // streak: 0,
-          // mode: habit.mode || '21-day',
-          // createdAt: new Date().toISOString(),
-          // lastCompleted: null,
-          // ...habit
           ...response.habit,
           id: response.habit._id
         };
@@ -335,8 +262,6 @@ export const AppProvider = ({ children }) => {
     }
   };
 
-  // const toggleTaskCompletion = (taskId) => {
-  // Update main tasks list
   // Toggle Task Completion - Backend Integration with Global Sync
   const toggleTaskCompletion = async (taskId) => {
     try {
@@ -383,16 +308,6 @@ export const AppProvider = ({ children }) => {
             // task.id === taskId ? { ...task, completed: !task.completed } : task
             task.id === taskId ? updatedTask : task
           ));
-
-          // SYNC: Update in dailyPlan if exists
-          // setDailyPlan(prev => ({
-          //   ...prev,
-          //   plannedTasks: prev.plannedTasks.map(item =>
-          //     item.taskId === taskId
-          //       ? { ...item, completed: !item.completed }
-          //       : item
-          //   )
-          // }));
         } else {
           showToast({ message: response.message || 'Failed to update task', status: 'error' })
         }
@@ -408,7 +323,6 @@ export const AppProvider = ({ children }) => {
     }
   };
 
-  // const updateTask = (taskId, updates) => {
   // Update Task - Backend Integration
   const updateTask = async (taskId, updates) => {
     try {
@@ -450,7 +364,6 @@ export const AppProvider = ({ children }) => {
     }
   };
 
-  // const updateGoal = (goalId, updates) => {
   // Update Goal - Backend Integration
   const updateGoal = async (goalId, updates) => {
     try {
@@ -474,7 +387,6 @@ export const AppProvider = ({ children }) => {
     }
   };
 
-  // const deleteGoal = (goalId) => {
   // Delete Goal - Backend Integration
   const deleteGoal = async (goalId) => {
     try {
@@ -491,7 +403,6 @@ export const AppProvider = ({ children }) => {
     }
   };
 
-  // const updateProject = (projectId, updates) => {
   // Update Project - Backend Integration
   const updateProject = async (projectId, updates) => {
     try {
@@ -515,7 +426,6 @@ export const AppProvider = ({ children }) => {
     }
   };
 
-  // const deleteProject = (projectId) => {
   // Delete Project - Backend Integration
   const deleteProject = async (projectId) => {
     try {
@@ -532,7 +442,6 @@ export const AppProvider = ({ children }) => {
     }
   };
 
-  // const updateHabit = (habitId, updates) => {
   // Update Habit - Backend Integration
   const updateHabit = async (habitId, updates) => {
     try {
@@ -596,7 +505,6 @@ export const AppProvider = ({ children }) => {
     }
   };
 
-  // const deleteHabit = (habitId) => {
   // Delete Habit - Backend Integration
   const deleteHabit = async (habitId) => {
     try {
@@ -663,13 +571,6 @@ export const AppProvider = ({ children }) => {
     return Math.round((completed / todayTasks.length) * 100);
   };
 
-  // const calculateDisciplineScore = () => {
-  //   if (habits.length === 0) return 0;
-  //   const totalStreak = habits.reduce((sum, habit) => sum + habit.streak, 0);
-  //   const maxPossibleStreak = habits.length * 21;
-  //   return Math.min(Math.round((totalStreak / maxPossibleStreak) * 100), 100);
-  // };
-
   const calculateDisciplineScore = () => {
     const tasks = dailyPlan?.plannedTasks || [];
 
@@ -700,31 +601,6 @@ export const AppProvider = ({ children }) => {
     setDailyTasks(tasksList);
   };
 
-
-  // ========== DAILY PLAN FUNCTIONS (BACKEND INTEGRATION) ==========
-
-  // Add task to daily plan
-  // const addToDailyPlan = (item) => {
-  //   const newItem = {
-  //     id: Date.now().toString() + Math.random(),
-  //     source: item.source, // 'task' | 'habit' | 'manual'
-  //     taskId: item.taskId || null,
-  //     habitId: item.habitId || null,
-  //     title: item.title,
-  //     startTime: item.startTime || '09:00',
-  //     endTime: item.endTime || '10:00',
-  //     completed: item.completed || false,
-  //     isImportant: item.isImportant || false,
-  //     ...item
-  //   };
-
-  //   setDailyPlan(prev => ({
-  //     ...prev,
-  //     plannedTasks: [...prev.plannedTasks, newItem]
-  //   }));
-
-  //   return newItem;
-
   // Add task to daily plan - Backend Integration
   const addToDailyPlan = async (item) => {
     try {
@@ -752,13 +628,6 @@ export const AppProvider = ({ children }) => {
     }
   };
 
-  // Remove from daily plan
-  // const removeFromDailyPlan = (id) => {
-  //   setDailyPlan(prev => ({
-  //     ...prev,
-  //     plannedTasks: prev.plannedTasks.filter(item => item.id !== id)
-  //   }));
-  // Remove from daily plan - Backend Integration
   const removeFromDailyPlan = async (id) => {
     try {
       const response = await dailyPlanAPI.remove(id);
@@ -781,11 +650,6 @@ export const AppProvider = ({ children }) => {
     }
   };
 
-  // Create manual task directly in daily plan
-  // const createManualDailyTask = (taskData) => {
-  //   const newTask = {
-  //     id: Date.now().toString() + Math.random(),
-  // Create manual task directly in daily plan - Backend Integration
   const createManualDailyTask = async (taskData) => {
     try {
       const manualTaskData = {
@@ -798,11 +662,6 @@ export const AppProvider = ({ children }) => {
         // completed: false,
         isImportant: taskData.isImportant || false
       };
-
-      // setDailyPlan(prev => ({
-      //   ...prev,
-      //   plannedTasks: [...prev.plannedTasks, newTask]
-      // }));
 
       // return newTask;
       const response = await dailyPlanAPI.add(manualTaskData);
@@ -828,19 +687,6 @@ export const AppProvider = ({ children }) => {
       return null;
     }
   };
-
-  // CRITICAL: Bidirectional sync for daily plan task completion
-  // const toggleDailyPlanTaskCompletion = (id) => {
-  //   const item = dailyPlan.plannedTasks.find(t => t.id === id);
-  //   if (!item) return;
-
-  //   // Update in daily plan
-  //   setDailyPlan(prev => ({
-  //     ...prev,
-  //     plannedTasks: prev.plannedTasks.map(t =>
-  //       t.id === id ? { ...t, completed: !t.completed } : t
-  //     )
-  //   }));
 
   // CRITICAL: Toggle Daily Plan Task - Backend handles ALL sync (tasks, habits, streaks)
   const toggleDailyPlanTaskCompletion = async (id) => {
@@ -894,8 +740,6 @@ export const AppProvider = ({ children }) => {
     }
   };
 
-  // Update daily plan task
-  // const updateDailyPlanTask = (id, updates) => {
   // Update daily plan task - Backend Integration
   const updateDailyPlanTask = async (id, updates) => {
     try {
@@ -913,8 +757,6 @@ export const AppProvider = ({ children }) => {
     }
   };
 
-  // Clear daily plan
-  // const clearDailyPlan = () => {
   // Clear daily plan - Backend Integration
   const clearDailyPlan = async () => {
     try {
@@ -945,7 +787,7 @@ export const AppProvider = ({ children }) => {
     setUser(null);
   };
 
-  // ✅ AUTO SAVE DAILY STATS
+  // AUTO SAVE DAILY STATS
   useEffect(() => {
     if (!dailyPlan) return;
 

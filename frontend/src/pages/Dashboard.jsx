@@ -28,7 +28,6 @@ const Dashboard = () => {
     projects,
     tasks,
     habits,
-    scores,
     dailyPlan,
     calculateGoalProgress,
     calculateProjectProgress,
@@ -36,7 +35,6 @@ const Dashboard = () => {
     getImportantTasks,
     getBehindTasks,
     toggleTaskCompletion,
-    getProjectsByGoal,
     calculateProductivityScore,
     calculateDisciplineScore
   } = useApp();
@@ -87,33 +85,12 @@ const Dashboard = () => {
   const pendingPlannedTasks = todayPlannedTasks.filter(t => !t.completed);
   const hasPlannedTasks = todayPlannedTasks.length > 0;
 
-  // Weekly mock data for charts
-  // const weeklyData = [
-  //   { name: 'Mon', productivity: productivityScore - 10, discipline: disciplineScore - 5 },
-  //   { name: 'Tue', productivity: productivityScore - 5, discipline: disciplineScore - 3 },
-  //   { name: 'Wed', productivity: productivityScore - 8, discipline: disciplineScore },
-  //   { name: 'Thu', productivity: productivityScore + 2, discipline: disciplineScore + 5 },
-  //   { name: 'Fri', productivity: productivityScore, discipline: disciplineScore + 2 },
-  //   { name: 'Sat', productivity: productivityScore + 5, discipline: disciplineScore + 8 },
-  //   { name: 'Sun', productivity: productivityScore + 3, discipline: disciplineScore + 3 },
-  // ];
-
-  const todayTasks = tasks.filter(task => {
-    const today = new Date().toDateString();
-    const taskDate = task.createdAt ? new Date(task.createdAt).toDateString() : today;
-    return taskDate === today && !task.completed;
-  });
-
   const importantTasks = getImportantTasks();
   const behindTasks = getBehindTasks();
 
   const topGoals = goals.slice(0, 4);
   const topProjects = projects.slice(0, 4);
   const topHabits = habits.slice(0, 3);
-
-  // const handleConnect = ()=>{
-  //   showToast({ message: "Not Functional"})
-  // }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-black via-gray-900 to-black pb-20 px-4 pt-6 relative overflow-hidden">
@@ -217,7 +194,7 @@ const Dashboard = () => {
 
 
         {/* Weekly Analytics */}
-          <h2 className="text-xl font-bold text-white mb-4">Weekly Analytics</h2>
+        <h2 className="text-xl font-bold text-white mb-4">Weekly Analytics</h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
           <Card className="bg-white/5 backdrop-blur-lg border border-white/10 hover:scale-[1.02] transition-all duration-300">
             <h3 className="text-lg font-semibold text-white mb-4">Productivity Score</h3>
@@ -287,19 +264,12 @@ const Dashboard = () => {
         {hasPlannedTasks ? (
           <Card className="mb-6 bg-white/5 border border-white/10 backdrop-blur-lg shadow-[0_0_40px_rgba(99,102,241,0.2)]">
             <div className="flex justify-between items-center mb-4">
-              {/* <h2 className="text-xl font-bold text-white">Today's Task Checklist</h2> */}
               <h2 className="text-xl font-bold text-white">Today's Planned Tasks</h2>
               <Link to="/trackers/daily-tasks" className="text-indigo-400 hover:text-indigo-300 text-sm">
                 View All
               </Link>
             </div>
             <div className="space-y-3">
-              {/* {todayTasks.slice(0, 5).map(task => (
-                <motion.div key={task.id} whileHover={{ scale: 1.02 }}>
-                  <TaskItem
-                    task={task}
-                    onToggle={toggleTaskCompletion}
-                  /> */}
               {pendingPlannedTasks.slice(0, 5).map((item, index) => (
                 <motion.div
                   key={item.id}
@@ -494,10 +464,6 @@ const Dashboard = () => {
             </div>
           </div>
         )}
-
-
-
-
 
         {/* FutureTwin CTA */}
         <Card className="bg-white/5 backdrop-blur-xl border border-white/10 shadow-[0_0_30px_rgba(99,102,241,0.2)]">
