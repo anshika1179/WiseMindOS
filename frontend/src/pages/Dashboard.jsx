@@ -343,7 +343,7 @@ const Dashboard = () => {
                   </GradientButton>
                 </Link>
                 <Link to="/trackers/daily-tasks">
-                  <GradientButton className='flex items-center'w-full h-full data-testid="plan-now-btn">
+                  <GradientButton className='flex items-center' data-testid="plan-now-btn">
                     Plan Ahead
                   </GradientButton>
                 </Link>

@@ -35,8 +35,9 @@ const Bag = () => {
     updatePage(activePage, value);
   };
 
-  const addNotebook = () => {
-    createNotebook("New Notebook");
+  const addNotebook = async() => {
+    await createNotebook("New Notebook");
+    showToast({message: 'New Notebook Created', status: "success"})
   };
 
   const addPage = async () => {
@@ -54,10 +55,10 @@ const Bag = () => {
 
   const NotebooksView = () => (
     <div className="h-full flex flex-col">
-      <div className="flex justify-between items-center mb-4">
+      <div className="flex justify-between items-center mb-4 px-3">
         <h2 className="text-white text-xl font-semibold">Notebooks</h2>
-        <button onClick={addNotebook}>
-          <Plus className="text-indigo-400" />
+        <button className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:shadow-[0_0_20px_rgba(99,102,241,0.3)] hover:translate-y-1 active:scale-95 text-white p-3 rounded-lg transition-all cursor-pointer" onClick={addNotebook}>
+          <Plus size={24} />
         </button>
       </div>
 
@@ -91,15 +92,17 @@ const Bag = () => {
                 <input
                   value={tempName}
                   onChange={(e) => setTempName(e.target.value)}
-                  onBlur={() => {
+                  onBlur={async() => {
                     if (!tempName.trim()) return;
-                    updateNotebook(nb.id, tempName);
+                    await updateNotebook(nb.id, tempName);
+                    showToast({message: "Updated Name", status: "success"})
                     setEditingNotebook(null);
                   }}
-                  onKeyDown={(e) => {
+                  onKeyDown={async(e) => {
                     if (e.key === "Enter") {
                       if (!tempName.trim()) return;
-                      updateNotebook(nb.id, tempName);
+                      await updateNotebook(nb.id, tempName);
+                      showToast({message: "Updated Name", status: "success"})
                       setEditingNotebook(null);
                     }
                   }}
@@ -121,9 +124,10 @@ const Bag = () => {
                     <Trash2
                       size={14}
                       className="text-red-400"
-                      onClick={(e) => {
+                      onClick={async(e) => {
                         e.stopPropagation();
-                        deleteNotebook(nb.id);
+                        await deleteNotebook(nb.id);
+                        showToast({message: `Notebook: ${nb.name} Deleted`, status: "success"})
                         setActiveNotebook(null);
                         setActivePage(null);
                         setView("notebooks");
@@ -149,12 +153,12 @@ const Bag = () => {
 
     return (
       <div className="h-full flex flex-col">
-        <div className="flex justify-between items-center mb-4">
+        <div className="flex justify-between items-center mb-4 px-3">
           <h2 className="text-white text-lg font-semibold">
             {currentNotebook.name}
           </h2>
-          <button onClick={addPage}>
-            <Plus className="text-green-400" />
+          <button className="bg-gradient-to-r from-green-600 to-emerald-600 hover:shadow-[0_0_20px_rgba(16,185,129,0.3)] hover:translate-y-1 active:scale-95 text-white p-3 rounded-xl transition-all cursor-pointer" onClick={addPage}>
+            <Plus size={24} />
           </button>
         </div>
 
