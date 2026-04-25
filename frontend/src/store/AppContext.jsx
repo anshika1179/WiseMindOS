@@ -183,6 +183,46 @@ export const AppProvider = ({ children }) => {
   };
 
 
+  const updateUser = async (updates) => {
+    try {
+      setLoading(true);
+
+      const response = await authAPI.update(updates);
+
+      if (response.success) {
+        // ✅ Update user state globally
+        setUser(prev => ({
+          ...prev,
+          ...response.user
+        }));
+
+        showToast({
+          message: response.message || 'Profile updated successfully',
+          status: 'success'
+        });
+
+        return true;
+      } else {
+        showToast({
+          message: response.message || 'Failed to update profile',
+          status: 'error'
+        });
+        return false;
+      }
+
+    } catch (error) {
+      console.error('Error updating user:', error);
+      showToast({
+        message: error.message || 'Failed to update profile',
+        status: 'error'
+      });
+      return false;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+
   // Add Goal - Backend Integration
   const addGoal = async (goal) => {
     try {
@@ -543,15 +583,15 @@ export const AppProvider = ({ children }) => {
   };
 
   const updateNotebook = async (notebookId, name) => {
-  const res = await notebookAPI.update(notebookId, name);
-  if (res.success) {
-    setNotebooks(prev =>
-      prev.map(n =>
-        n.id === notebookId ? { ...n, name } : n
-      )
-    );
-  }
-};
+    const res = await notebookAPI.update(notebookId, name);
+    if (res.success) {
+      setNotebooks(prev =>
+        prev.map(n =>
+          n.id === notebookId ? { ...n, name } : n
+        )
+      );
+    }
+  };
 
   const deleteNotebook = async (notebookId) => {
     const res = await notebookAPI.delete(notebookId);
@@ -590,16 +630,16 @@ export const AppProvider = ({ children }) => {
 
   const updateTimeout = useRef(null);
   const updatePage = (pageId, content) => {
-  setPages(prev =>
-    prev.map(p => p.id === pageId ? { ...p, content } : p)
-  );
+    setPages(prev =>
+      prev.map(p => p.id === pageId ? { ...p, content } : p)
+    );
 
-  if (updateTimeout.current) clearTimeout(updateTimeout.current);
+    if (updateTimeout.current) clearTimeout(updateTimeout.current);
 
-  updateTimeout.current = setTimeout(async () => {
-    await pageAPI.update({ pageId, content });
-  }, 500);
-};
+    updateTimeout.current = setTimeout(async () => {
+      await pageAPI.update({ pageId, content });
+    }, 500);
+  };
 
   const deletePage = async (pageId, notebookId) => {
     const res = await pageAPI.delete(pageId, notebookId);
