@@ -1,6 +1,6 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import { TrendingUp, Target, CheckCircle, Zap, ArrowRight, UserPlus2, Camera, CalendarDays, Star, AlertTriangle, ArrowRightIcon, UserCog, UserPen } from 'lucide-react';
+import { TrendingUp, Target, CheckCircle, Zap, ArrowRight, UserPlus2, Camera, CalendarDays, Star, AlertTriangle, ArrowRightIcon, UserCog, UserPen, LucideTrophy } from 'lucide-react';
 import { useApp } from '../store/AppContext';
 import Card from '../components/Card';
 import StatCard from '../components/StatCard';
@@ -345,7 +345,7 @@ const Dashboard = () => {
           </div>)}
 
         {/* Today's Tasks */}
-        {hasPlannedTasks ? (
+        {hasPlannedTasks && pendingPlannedTasks.length > 0 ? (
           <Card className="mb-6 bg-white/5 border border-white/10 backdrop-blur-lg shadow-[0_0_40px_rgba(99,102,241,0.2)]">
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-xl font-bold text-white">Today's Planned Tasks</h2>
@@ -426,7 +426,23 @@ const Dashboard = () => {
               </div>
             </div>
           </Card>
-        ) : (
+        ) : hasPlannedTasks && pendingPlannedTasks.length == 0 ? (
+          <Card className="mb-6 bg-white/5 backdrop-blur-xl border border-white/10 shadow-[0_0_30px_rgba(99,102,241,0.15)]">
+            <div className="text-center py-8">
+              <LucideTrophy size={48} className="text-indigo-400 mx-auto mb-3 drop-shadow-[0_0_10px_rgba(99,102,241,0.6)]" />
+              <h3 className="text-xl font-bold text-white mb-2">"Hooray !!"</h3>
+              <h3 className="text-xl font-bold text-white mb-2">All tasks for today is completed.</h3>
+              <p className="text-gray-400 mb-4">
+                Plan Ahead, Keep pushing yourself...
+              </p>
+              <Link to="/trackers/daily-tasks">
+                <GradientButton data-testid="plan-now-btn">
+                  Plan Ahead
+                </GradientButton>
+              </Link>
+            </div>
+          </Card>
+        ) : !hasPlannedTasks && (
           <Card className="mb-6 bg-white/5 backdrop-blur-xl border border-white/10 shadow-[0_0_30px_rgba(99,102,241,0.15)]">
             <div className="text-center py-8">
               <CalendarDays size={48} className="text-indigo-400 mx-auto mb-3 drop-shadow-[0_0_10px_rgba(99,102,241,0.6)]" />
