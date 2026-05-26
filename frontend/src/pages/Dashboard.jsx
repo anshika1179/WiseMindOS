@@ -168,7 +168,7 @@ const Dashboard = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-black via-gray-900 to-black pb-20 px-4 pt-6 relative overflow-hidden">
+<div className="min-h-screen bg-gradient-to-br from-black via-gray-900 to-black pb-20 px-3 sm:px-4 pt-4 sm:pt-6 relative overflow-hidden">
       <motion.div
         className="absolute top-10 left-10 w-72 h-72 bg-purple-500 rounded-full blur-3xl opacity-20"
         animate={{ x: [0, 40, 0], y: [0, 20, 0] }}
@@ -211,7 +211,7 @@ const Dashboard = () => {
 
             <div className='text-gray-400 mb-6'>{user.bio || 'Add Bio'}</div>
 
-            <div className='flex justify-around mb-4'>
+            <div className='flex flex-wrap justify-around gap-4 mb-4'>
               <div className="text-center">
                 <p className="text-lg font-bold text-indigo-400">{productivityScore}%</p>
                 <p className="text-xs text-gray-400">Productivity</p>
@@ -442,7 +442,7 @@ const Dashboard = () => {
                 </div>
               )}
             </div>
-            <div className='flex gap-2 w-full mt-4 pt-4'>
+          <div className='flex flex-col sm:flex-row gap-2 w-full mt-4 pt-4'>
               <Link to="/focus-room" className='flex-1'>
                 <GradientButton className="w-full h-full flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(99,102,241,0.5)]" data-testid="focus-room-cta">
                   <span>Enter Focus Room</span>
@@ -524,7 +524,7 @@ const Dashboard = () => {
                   </div>
                 </motion.div>
               ))}
-              <div className='flex gap-2 w-full h-full justify-between mt-4'>
+            <div className='flex flex-col sm:flex-row gap-2 w-full h-full justify-between mt-4'>
                 <Link to="/focus-room">
                   <GradientButton className="w-full h-full flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(99,102,241,0.5)]" data-testid="focus-room-cta">
                     <span>Enter Focus Room</span>
