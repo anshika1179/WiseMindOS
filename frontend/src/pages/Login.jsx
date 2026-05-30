@@ -10,7 +10,7 @@ import { showToast } from '../utils/toastHelper';
 
 
 const Login = () => {
-  const { token, setToken, setUser, navigate } = useApp()
+  const { token, setToken, user, setUser, navigate } = useApp()
   const [formData, setFormData] = useState({
     identifier: '',
     password: ''
