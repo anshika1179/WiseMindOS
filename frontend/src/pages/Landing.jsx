@@ -45,7 +45,7 @@ const Landing = () => {
       {/* Hero Section */}
       <div className='bg-gradient-to-br from-gray-900 via-black to-gray-900'>
         <Motion.div initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 1.2 }}>
-          <Motion.section animate={{ y: [0, -10, 0] }} transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }} className="relative min-h-screen flex items-center justify-center px-4 py-20">
+            <Motion.section animate={{ y: [0, -10, 0] }} transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }} className="relative min-h-screen flex items-center justify-center px-4 py-20">
             <div className="absolute inset-0 bg-gradient-to-br from-gray-900 via-black to-gray-900"></div>
             {/* Glow blobs */}
             <Motion.div
@@ -128,7 +128,7 @@ const Landing = () => {
 
 
       {/* Features Section */}
-      <section className="py-20 px-4 bg-white dark:bg-gray-800/50">
+      <section id="features" className="py-20 px-4 bg-white dark:bg-gray-800/50">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold young-serif-regular text-gray-600 dark:text-gray-100 mb-2">Powerful Features</h2>
@@ -315,8 +315,16 @@ hover:scale-[1.02] hover:bg-white/10 transition-all duration-300 hover:drop-shad
             <div>
               <h3 className="text-white font-semibold mb-4">Product</h3>
               <ul className="space-y-2 text-gray-400 text-sm">
-                <li className="hover:text-white transition cursor-pointer">Features</li>
-                <li className="hover:text-white transition cursor-pointer">Pricing</li>
+                <li>
+                  <Link to="/#features" className="hover:text-white transition cursor-pointer">
+                    Features
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/pricing" className="hover:text-white transition cursor-pointer">
+                    Pricing
+                  </Link>
+                </li>
                 <li>
                   <Link to="/roadmap" className="hover:text-white transition">
                     Roadmap
@@ -329,9 +337,21 @@ hover:scale-[1.02] hover:bg-white/10 transition-all duration-300 hover:drop-shad
             <div>
               <h3 className="text-white font-semibold mb-4">Company</h3>
               <ul className="space-y-2 text-gray-400 text-sm">
-                <li className="hover:text-white transition cursor-pointer">About</li>
-                <li className="hover:text-white transition cursor-pointer">Careers</li>
-                <li className="hover:text-white transition cursor-pointer">Contact</li>
+                <li>
+                  <Link to="/about" className="hover:text-white transition cursor-pointer">
+                    About
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/careers" className="hover:text-white transition cursor-pointer">
+                    Careers
+                  </Link>
+                </li>
+                <li>
+                  <Link to="/contact" className="hover:text-white transition cursor-pointer">
+                    Contact
+                  </Link>
+                </li>
               </ul>
             </div>
 
