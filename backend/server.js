@@ -17,7 +17,7 @@ import pageRouter from './routes/pageRoute.js';
 import weeklyStatRouter from './routes/weeklyStatRoute.js';
 
 const app = express();
-const port = process.env.PORT || 5000;
+const port = process.env.PORT || 4000;
 connectDB();
 
 app.use(express.json());
