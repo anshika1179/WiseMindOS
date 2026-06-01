@@ -41,7 +41,7 @@ const Landing = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-black via-gray-900 to-black text-white">
+<div className="min-h-screen bg-gradient-to-br from-black via-gray-900 to-black text-white overflow-x-hidden">
       {/* Hero Section */}
       <div className='bg-gradient-to-br from-gray-900 via-black to-gray-900'>
         <motion.div initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 1.2 }}>
@@ -74,7 +74,7 @@ const Landing = () => {
 
                 {/* Title */}
                 <motion.h1
-                  className="text-4xl young-serif-regular md:text-7xl font-extrabold tracking-tight text-white mb-4 cursor-pointer"
+                  className="text-3xl sm:text-4xl md:text-7xl font-extrabold tracking-tight text-white mb-4 cursor-pointer break-words"
                   animate={{
                     textShadow: [
                       "0px 0px 0px rgba(99,102,241,0)",
@@ -89,7 +89,7 @@ const Landing = () => {
                   }}
                 >
                   Wise
-                  <span className="bg-gradient-to-r text-5xl md:text-8xl baloo-2-700 from-indigo-500 to-purple-500 bg-clip-text text-transparent">
+                  <span className="bg-gradient-to-r text-4xl sm:text-5xl md:text-8xl baloo-2-700 from-indigo-500 to-purple-500 bg-clip-text text-transparent break-words">
                     Mind
                   </span>
                   OS
@@ -97,8 +97,7 @@ const Landing = () => {
 
                 <div className="h-1 w-32 bg-gradient-to-r from-indigo-600 to-violet-600 mx-auto rounded-full"></div>
               </div>
-
-              <p className="text-xl md:text-2xl text-gray-300 mb-8 leading-relaxed">
+<p className="text-lg sm:text-xl md:text-2xl text-gray-300 mb-8 leading-relaxed px-2">
                 Your intelligent life tracking and simulation system.
                 <br />
                 Stay focused, achieve goals, and optimize your future.
@@ -137,7 +136,7 @@ const Landing = () => {
             <p className="text-gray-900 dark:text-gray-300 mt-2 text-base md:text-lg">Everything you need for holistic personal development</p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
             {features.map((feature, index) => (
               <motion.div
                 key={index}
@@ -184,12 +183,12 @@ hover:scale-105 hover:shadow-xl transition-all duration-300 cursor-pointer">
                 <div className="flex items-start gap-6 p-2 rounded-3xl cursor-pointer 
 bg-white/5 backdrop-blur-lg border border-white/10 
 hover:scale-[1.02] hover:bg-white/10 transition-all duration-300 hover:drop-shadow-[0_0_20px_rgba(99,102,241,0.5)]">
-                  <div className='p-4 flex items-start gap-6'>
+                 <div className='p-4 flex flex-col sm:flex-row items-start gap-4 sm:gap-6'>
                     <div className="text-4xl font-bold bg-gradient-to-r from-indigo-500 to-purple-500 bg-clip-text text-transparent flex-shrink-0">
                       {item.step}
                     </div>
                     <div>
-                      <h3 className="text-2xl font-semibold text-white mb-2">{item.title}</h3>
+                    <h3 className="text-xl sm:text-2xl font-semibold text-white mb-2"> {item.title}</h3>
                       <p className="text-gray-400">{item.desc}</p>
                     </div>
                   </div>
@@ -212,7 +211,7 @@ hover:scale-[1.02] hover:bg-white/10 transition-all duration-300 hover:drop-shad
             Join thousands who are achieving their goals with WiseMindOS
           </p>
           <Link to="/signup">
-            <GradientButton data-testid="cta-signup-btn" classNameclassName="
+            <GradientButton data-testid="cta-signup-btn" className="
     text-lg 
     bg-white text-black 
     bg-gradient-to-r from-green-500 via-blue-500 to-purple-600
