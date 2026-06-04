@@ -975,7 +975,18 @@ const Dashboard = () => {
           <div className='flex flex-col gap-3 items-center'>
             <label htmlFor="profile_picture" className='block text-gray-300 text-sm font-medium mb-2'>
               Click to upload
-              <input hidden type="file" accept='image/*' id='profile_picture' className='w-full p-3 border border-gray-200 rounded-lg' onChange={(e) => setNewProfilePic(e.target.files[0])} />
+              <input hidden type="file" accept='.png, .jpg, .jpeg, .webp, .gif' id='profile_picture' className='w-full p-3 border border-gray-200 rounded-lg' onChange={(e) => {
+                const file = e.target.files[0];
+                if (file) {
+                  const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+                  if (allowedTypes.includes(file.type)) {
+                    setNewProfilePic(file);
+                  } else {
+                    alert('Please upload a valid picture format (.png, .jpg, .jpeg, etc.)');
+                    e.target.value = '';
+                  }
+                }
+              }} />
 
               <div className='group/profile relative'>
                 <img src={newProfilePic ? URL.createObjectURL(newProfilePic) : user.profile_picture || profile_pic} alt="Profile picture preview" className='w-24 h-24 rounded-full object-cover mt-2' />
