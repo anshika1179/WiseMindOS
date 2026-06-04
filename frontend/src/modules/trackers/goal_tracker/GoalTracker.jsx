@@ -68,8 +68,8 @@ const GoalTracker = () => {
       goalId: selectedProject.goalId,
       createdFrom: 'project'
     });
-    setNewTask({ title: '', deadline: '', isImportant: false });
-    setShowAddTask(false);
+    setNewProjectTask({ title: '', deadline: '', isImportant: false });
+    setShowAddProjectTask(false);
   };
 
   const handleAddTask = () => {
