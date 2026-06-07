@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import {AnimatePresence, motion } from 'framer-motion';
 import { ArrowRight, Check, Shield, Sparkles, Zap } from 'lucide-react';
 import Card from '../components/Card';
 import GradientButton from '../components/GradientButton';
@@ -178,8 +178,30 @@ const Pricing = () => {
                   </div>
                   <p className="text-gray-400 min-h-14">{plan.description}</p>
                   <div className="my-8">
-                    <span className="text-5xl font-extrabold">${price}</span>
-                    <span className="text-gray-400 ml-2">{cadence}</span>
+                    <AnimatePresence mode="wait">
+                      <motion.span
+                        key={price}
+                        initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        exit={{ opacity: 0, y: -10, scale: 0.95 }}
+                        transition={{ duration: 0.25 }}
+                        className="text-5xl font-extrabold inline-block"
+                      >
+                        ${price}
+                      </motion.span>
+                    </AnimatePresence>
+                    <AnimatePresence mode="wait">
+                      <motion.span
+                        key={cadence}
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 0.2 }}
+                        className="text-gray-400 ml-2"
+                      >
+                        {cadence}
+                      </motion.span>
+                    </AnimatePresence>
                   </div>
                   <Link to="/signup" className="block min-w-0 mb-8">
                     <GradientButton className="w-full flex items-center justify-center gap-2">
