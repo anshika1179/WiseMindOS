@@ -6,6 +6,7 @@ import GradientButton from '../components/GradientButton';
 import InputField from '../components/InputField';
 import { motion } from 'framer-motion';
 import { getGoalDuplicateError, isDuplicateGoalTitle } from '../utils/helpers';
+import { showToast } from "../utils/toastHelper";
 
 const Onboarding = () => {
   const navigate = useNavigate();
@@ -91,7 +92,7 @@ const Onboarding = () => {
   const handleAddExecution = () => {
     if (!currentExecution.title.trim() || !selectedGoalForMapping) return;
     if (currentExecution.deadline && currentExecution.deadline < minDeadline) {
-      alert('Deadline cannot be earlier than today');
+      showToast({message: 'Deadline cannot be earlier than today', status: "error"})
       return;
     }
 
