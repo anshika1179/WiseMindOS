@@ -31,6 +31,7 @@ import { ToastContainer } from 'react-toastify';
 import ErrorBoundary from './components/ErrorBoundary';
 import ErrorPage from './pages/ErrorPage';
 import CustomCursor from './components/CustomCursor';
+import ScrollToTop from "./components/ScrollToTop";
 
 function App() {
   const { token } = useApp();
@@ -73,6 +74,7 @@ function App() {
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
     </ErrorBoundary>
+    <ScrollToTop />
   );
 }
 
