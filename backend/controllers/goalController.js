@@ -1,5 +1,4 @@
 import goalModel from '../models/goalModel.js';
-import projectModel from '../models/projectModel.js';
 import taskModel from '../models/taskModel.js';
 
 const normalizeGoalTitle = (title) => (title ?? '').trim().toLowerCase();
@@ -107,10 +106,6 @@ const deleteGoal = async (req, res, next) => {
         if (!goal) {
             return res.json({ success: false, message: 'Goal not found' });
         }
-
-        // Clean up orphaned projects and tasks
-        await projectModel.updateMany({ userId, goalId }, { $unset: { goalId: "" } });
-        await taskModel.updateMany({ userId, goalId }, { $unset: { goalId: "" } });
 
         res.json({ success: true, message: 'Goal deleted successfully' });
 
