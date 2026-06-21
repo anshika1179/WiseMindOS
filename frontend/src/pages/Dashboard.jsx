@@ -1,6 +1,6 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { LineChart, Line, BarChart, Bar, XAxis, YAxis, ResponsiveContainer, LabelList } from 'recharts';
-import { TrendingUp, Target, CheckCircle, Zap, ArrowRight, UserPlus2, Camera, CalendarDays, Star, AlertTriangle, UserPen, LucideTrophy, Pencil, Activity, Flame, BarChart3, Timer, Download } from 'lucide-react';
+import { TrendingUp, Target, CheckCircle, Zap, ArrowRight, UserPlus2, Camera, CalendarDays, Star, AlertTriangle, UserPen, LucideTrophy, Pencil, Activity, Flame, BarChart3, Timer, Download, Search } from 'lucide-react';
 import { useApp } from '../store/AppContext';
 import Card from '../components/Card';
 import StatCard from '../components/StatCard';
@@ -93,6 +93,7 @@ const Dashboard = () => {
   });
   const [newProfilePic, setNewProfilePic] = useState(null);
   const [weeklyLoading, setWeeklyLoading] = useState(true);
+  const [taskSearch, setTaskSearch] = useState("");
 
   const navigate = useNavigate();
 
@@ -144,11 +145,30 @@ const Dashboard = () => {
 
   // Get today's planned tasks from dailyPlan
   const todayPlannedTasks = dailyPlan?.plannedTasks || [];
-  const pendingPlannedTasks = todayPlannedTasks?.filter(t => !t.completed) || [];
   const hasPlannedTasks = todayPlannedTasks.length > 0;
 
-  const importantTasks = getImportantTasks();
-  const behindTasks = getBehindTasks();
+  const importantTasks = getImportantTasks() || [];
+  const behindTasks = getBehindTasks() || [];
+
+  const filteredImportantTasks = useMemo(() => {
+    return importantTasks.filter(t => t.title?.toLowerCase().includes(taskSearch.toLowerCase()));
+  }, [importantTasks, taskSearch]);
+
+  const filteredBehindTasks = useMemo(() => {
+    return behindTasks.filter(t => t.title?.toLowerCase().includes(taskSearch.toLowerCase()));
+  }, [behindTasks, taskSearch]);
+
+  const filteredTodayPlannedTasks = useMemo(() => {
+    return todayPlannedTasks.filter(t => t.title?.toLowerCase().includes(taskSearch.toLowerCase()));
+  }, [todayPlannedTasks, taskSearch]);
+
+  const pendingPlannedTasks = useMemo(() => {
+    return filteredTodayPlannedTasks.filter(t => !t.completed);
+  }, [filteredTodayPlannedTasks]);
+
+  const hasAnyTasks = useMemo(() => {
+    return importantTasks.length > 0 || behindTasks.length > 0 || todayPlannedTasks.length > 0;
+  }, [importantTasks, behindTasks, todayPlannedTasks]);
 
   const topGoals = (goals || []).slice(0, 4);
   const topProjects = (projects || []).slice(0, 4);
@@ -708,6 +728,23 @@ const Dashboard = () => {
         )}
 
 
+        {/* Search Bar */}
+        {hasAnyTasks && (
+          <div className="mb-6 relative max-w-md" data-testid="task-search-bar-container">
+            <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400 pointer-events-none">
+              <Search size={18} />
+            </span>
+            <input
+              type="text"
+              placeholder="Search tasks by title..."
+              value={taskSearch}
+              onChange={(e) => setTaskSearch(e.target.value)}
+              className="w-full bg-white/5 text-white border border-white/10 rounded-xl pl-10 pr-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all backdrop-blur-xl text-sm"
+              data-testid="task-search-input"
+            />
+          </div>
+        )}
+
         {(importantTasks.length > 0 || behindTasks.length > 0) && (
           <div className='border-orange-500/30 bg-orange-500/5 backdrop-blur-lg rounded-2xl p-6 shadow-lg items-stretch mb-4'>
             <div className='flex gap-2 flex-col lg:flex-row'>
@@ -721,14 +758,20 @@ const Dashboard = () => {
                   </h2>
                   <p className="text-gray-400 text-sm mb-4">High Priority Tasks, Complete these first.</p>
                   <div className="space-y-3">
-                    {importantTasks.slice(0, 4).map(task => (
-                      <Motion.div key={task.id} whileHover={{ scale: 1.005 }}>
-                        <TaskItem
-                          task={task}
-                          onToggle={toggleTaskCompletion}
-                        />
-                      </Motion.div>
-                    ))}
+                    {filteredImportantTasks.length > 0 ? (
+                      filteredImportantTasks.slice(0, 4).map(task => (
+                        <Motion.div key={task.id} whileHover={{ scale: 1.005 }}>
+                          <TaskItem
+                            task={task}
+                            onToggle={toggleTaskCompletion}
+                          />
+                        </Motion.div>
+                      ))
+                    ) : (
+                      <div className="text-gray-400 text-sm py-4 text-center">
+                        No matching important tasks
+                      </div>
+                    )}
                   </div>
                 </div>
               )}
@@ -744,14 +787,20 @@ const Dashboard = () => {
                   </h2>
                   <p className="text-gray-400 text-sm mb-4">Act fast on these tasks, You are already running late.</p>
                   <div className="space-y-3">
-                    {behindTasks.slice(0, 4).map(task => (
-                      <Motion.div key={task.id} whileHover={{ scale: 1.005 }}>
-                        <TaskItem
-                          task={task}
-                          onToggle={toggleTaskCompletion}
-                        />
-                      </Motion.div>
-                    ))}
+                    {filteredBehindTasks.length > 0 ? (
+                      filteredBehindTasks.slice(0, 4).map(task => (
+                        <Motion.div key={task.id} whileHover={{ scale: 1.005 }}>
+                          <TaskItem
+                            task={task}
+                            onToggle={toggleTaskCompletion}
+                          />
+                        </Motion.div>
+                      ))
+                    ) : (
+                      <div className="text-gray-400 text-sm py-4 text-center">
+                        No matching overdue tasks
+                      </div>
+                    )}
                   </div>
                 </div>
               )}
@@ -784,7 +833,7 @@ const Dashboard = () => {
               ))}
             </div>
           </SkeletonCard>
-        ) : hasPlannedTasks && pendingPlannedTasks.length > 0 ? (
+        ) : hasPlannedTasks && (pendingPlannedTasks.length > 0 || taskSearch !== "") ? (
           <Card className="mb-6 bg-white/5 border border-white/10 backdrop-blur-lg shadow-[0_0_40px_rgba(99,102,241,0.2)]">
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-xl font-bold text-white">Today's Planned Tasks</h2>
@@ -793,16 +842,17 @@ const Dashboard = () => {
               </Link>
             </div>
             <div className="space-y-3">
-              {pendingPlannedTasks.slice(0, 5).map((item, index) => (
-                <Motion.div
-                  key={item.id}
-                  whileHover={{ scale: 1.02 }}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: index * 0.05 }}
-                  className="p-3 bg-white/5 rounded-lg border border-white/10 hover:border-indigo-500/50 transition-all"
-                  data-testid={`planned-task-${item.id}`}
-                >
+              {pendingPlannedTasks.length > 0 ? (
+                pendingPlannedTasks.slice(0, 5).map((item, index) => (
+                  <Motion.div
+                    key={item.id}
+                    whileHover={{ scale: 1.02 }}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: index * 0.05 }}
+                    className="p-3 bg-white/5 rounded-lg border border-white/10 hover:border-indigo-500/50 transition-all"
+                    data-testid={`planned-task-${item.id}`}
+                  >
                   <div className="flex items-start gap-3">
                     {/* Time */}
                     <div className="text-center min-w-[60px]">
@@ -851,7 +901,11 @@ const Dashboard = () => {
                     </div>
                   </div>
                 </Motion.div>
-              ))}
+              ))) : (
+                <div className="text-gray-400 text-sm py-6 text-center">
+                  No planned tasks match "{taskSearch}"
+                </div>
+              )}
             <div className='flex flex-col sm:flex-row gap-2 w-full h-full justify-between mt-4'>
                 <Link to="/focus-room">
                   <GradientButton className="w-full h-full flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(99,102,241,0.5)]" data-testid="focus-room-cta">
