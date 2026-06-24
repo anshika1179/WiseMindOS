@@ -1,5 +1,6 @@
 import notebookModel from "../models/notebookModel.js";
 import pageModel from "../models/pageModel.js";
+import { sanitizeField } from '../utils/sanitize.js';
 
 const buildNotebookReorderUpdate = (_notebook, index) => ({
   order: index + 1,
@@ -37,9 +38,8 @@ export const createNotebook = async (req, res, next) => {
     const userId = req.user.id;
     const { name } = req.body;
 
-    if (!name) {
-      return res.json({ success: false, message: "Name required" });
-    }
+    const { value: cleanName, error: nameError } = sanitizeField(name, 'notebookName', { required: true });
+    if (nameError) return res.json({ success: false, message: nameError });
 
     const count = await notebookModel.countDocuments({ userId });
     if (count >= 40) {
@@ -48,10 +48,9 @@ export const createNotebook = async (req, res, next) => {
 
     const notebook = new notebookModel({
       userId,
-      name,
+      name: cleanName,
       order: count + 1
     });
-
     await notebook.save();
 
     res.json({ success: true, notebook });
@@ -88,9 +87,12 @@ export const updateNotebook = async (req, res, next) => {
       return res.json({ success: false, message: "NotebookId and name required" });
     }
 
+    const { value: cleanName, error: nameError } = sanitizeField(name, 'notebookName', { required: true });
+    if (nameError) return res.json({ success: false, message: nameError });
+
     const notebook = await notebookModel.findOneAndUpdate(
       { _id: notebookId, userId },
-      { name },
+      { name: cleanName },
       { new: true }
     );
 
