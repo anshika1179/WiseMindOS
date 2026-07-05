@@ -367,23 +367,26 @@ const Dashboard = () => {
             >
               <div className="flex justify-center sm:justify-start sm:row-span-2 md:row-span-1">
                 <div className="relative p-1 rounded-full bg-gradient-to-br from-indigo-500 via-purple-500 to-amber-400 shadow-[0_0_30px_rgba(99,102,241,0.45)]">
-                  <div className="h-28 w-28 sm:h-[7.5rem] sm:w-[7.5rem] rounded-full relative group border-4 border-black/20 bg-black/30 overflow-hidden">
-                    <img
-                      src={user.profile_picture || profile_pic}
-                      className="w-full h-full object-cover rounded-full"
-                      alt={`${user.name || 'User'} profile`}
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowEditProfilePic(true)}
-                      aria-label="Change profile picture"
-                      className="w-full h-full bg-black/50 absolute rounded-full inset-0 cursor-pointer opacity-0 z-10 group-hover:opacity-100 focus:opacity-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-300 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-900"
-                    >
-                      <div className="h-full w-full flex items-center justify-center">
-                        <Camera aria-hidden="true" size={18} className="text-white" />
-                      </div>
-                    </button>
-                    <div className="border-2 h-4 w-4 sm:h-5 sm:w-5 rounded-full z-10 bottom-1 absolute right-1 border-green-400 bg-green-400" />
+                  <div className='relative'>
+
+                    <div className="h-28 w-28 sm:h-[7.5rem] sm:w-[7.5rem] rounded-full relative group border-4 border-black/20 bg-black/30 overflow-hidden">
+                      <img
+                        src={user.profile_picture || profile_pic}
+                        className="w-full h-full object-cover rounded-full"
+                        alt={`${user.name || 'User'} profile`}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowEditProfilePic(true)}
+                        aria-label="Change profile picture"
+                        className="w-full h-full bg-black/50 absolute rounded-full inset-0 cursor-pointer opacity-0 z-10 group-hover:opacity-100 focus:opacity-100 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-300 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-900"
+                      >
+                        <div className="h-full w-full flex items-center justify-center">
+                          <Camera aria-hidden="true" size={18} className="text-white" />
+                        </div>
+                      </button>
+                    </div>
+                    <div className="absolute bottom-0.5 right-0.5 h-4 w-4 sm:h-5 sm:w-5 rounded-full bg-green-500 border-[3px] border-gray-900 z-20" />
                   </div>
                 </div>
               </div>
@@ -424,6 +427,7 @@ const Dashboard = () => {
       focus:outline-none
       focus-visible:ring-2
       focus-visible:ring-indigo-300
+      cursor-pointer
     "
                   >
                     <UserPen size={19} />
@@ -582,19 +586,19 @@ const Dashboard = () => {
                   <div key={day.name} className="flex flex-col items-center gap-2">
                     <div
                       className={`w-full min-w-9 h-12 rounded-xl border flex items-end overflow-hidden ${day.value >= 80
-                          ? 'border-emerald-400/40 bg-emerald-400/15'
-                          : day.value >= 60
-                            ? 'border-amber-400/40 bg-amber-400/15'
-                            : 'border-rose-400/40 bg-rose-400/15'
+                        ? 'border-emerald-400/40 bg-emerald-400/15'
+                        : day.value >= 60
+                          ? 'border-amber-400/40 bg-amber-400/15'
+                          : 'border-rose-400/40 bg-rose-400/15'
                         }`}
                       title={`${day.name}: ${day.value}%`}
                     >
                       <div
                         className={`w-full ${day.value >= 80
-                            ? 'bg-emerald-400'
-                            : day.value >= 60
-                              ? 'bg-amber-400'
-                              : 'bg-rose-400'
+                          ? 'bg-emerald-400'
+                          : day.value >= 60
+                            ? 'bg-amber-400'
+                            : 'bg-rose-400'
                           }`}
                         style={{ height: `${Math.max(12, day.value)}%` }}
                       />
