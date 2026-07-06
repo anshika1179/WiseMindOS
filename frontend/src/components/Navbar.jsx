@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Menu, X } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion"; // Import motion and AnimatePresence
 import logo from "../assets/logo.jpeg";
 
 export default function Navbar() {
@@ -67,15 +68,22 @@ export default function Navbar() {
         </div>
 
         <button
-          className="md:hidden"
+          className="md:hidden text-gray-300 hover:text-indigo-400 transition"
           onClick={() => setIsOpen(!isOpen)}
         >
           {isOpen ? <X /> : <Menu />}
         </button>
       </div>
 
-      {isOpen && (
-        <div className="md:hidden bg-gray-900 border-t border-white/10 px-6 py-4 space-y-4">
+      <AnimatePresence> {/* Wrap the conditional rendering with AnimatePresence */}
+        {isOpen && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.3 }}
+            className="md:hidden bg-transparent backdrop-blur-md transition duration-100 border-t border-white/10 px-6 py-4 space-y-4"
+          >
 
           {navItems.map((item) => (
             <Link
@@ -103,8 +111,9 @@ export default function Navbar() {
           >
             Sign Up
           </Link>
-        </div>
+        </motion.div>
       )}
+      </AnimatePresence>
     </nav>
   );
 }
