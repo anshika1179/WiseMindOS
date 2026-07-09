@@ -17,10 +17,6 @@ const AppLayout = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-900 pb-24 relative text-white">
-      <CustomCursor />
-      
-      {/* Main App Workspace Router Outlet */}
     <div className="min-h-screen bg-gray-900">
       <Outlet />
 
