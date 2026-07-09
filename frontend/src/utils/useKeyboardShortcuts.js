@@ -35,13 +35,13 @@ export const useKeyboardShortcuts = (toggleModal) => {
           navigate('/');
         } else if (key === 'g') {
           event.preventDefault();
-          navigate('/goals');
+          navigate('/trackers/goals');
         } else if (key === 't') {
           event.preventDefault();
-          navigate('/tasks');
+          navigate('/trackers/tasks');
         } else if (key === 'p') {
           event.preventDefault();
-          navigate('/planner');
+          navigate('/trackers/projects');
         }
         lastKey = ''; // Reset sequence tracker
         return;
