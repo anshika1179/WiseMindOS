@@ -22,9 +22,10 @@ Please report suspected security vulnerabilities through a private communication
 1. **Direct Contact**  
    Report the issue privately using the maintainer contact below:
 
-   `[INSERT MAINTAINER EMAIL OR CONTACT METHOD]`
+   Email at: **kumaraaryan498@gmail.com**
+   Discord Server: **https://discord.gg/dx2C7cYTR**
 
-2. **GitHub Private Vulnerability Reporting (if enabled)**  
+3. **GitHub Private Vulnerability Reporting (if enabled)**  
    If this repository enables GitHub Private Vulnerability Reporting, it should be used as the preferred channel for reporting security vulnerabilities.
 
 ### What to Include in a Report
