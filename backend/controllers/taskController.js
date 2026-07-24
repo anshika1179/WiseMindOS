@@ -1,5 +1,6 @@
 import taskModel from '../models/taskModel.js';
 import dailyPlanModel from '../models/dailyPlanModel.js';
+import { awardXP } from './gamificationController.js';
 
 // Create Task
 const createTask = async (req, res, next) => {
@@ -57,6 +58,7 @@ const updateTask = async (req, res, next) => {
             return res.json({ success: false, message: 'Task not found' });
         }
 
+        const wasCompleted = task.completed;
         if (title) task.title = title;
         if (goalId !== undefined) task.goalId = goalId;
         if (projectId !== undefined) task.projectId = projectId;
@@ -65,6 +67,11 @@ const updateTask = async (req, res, next) => {
         if (completed !== undefined) task.completed = completed;
 
         await task.save();
+        
+        if (!wasCompleted && task.completed) {
+            await awardXP(userId, 10); // 10 XP for completing a task
+        }
+
         res.json({ success: true, task, message: 'Task Updated !' });
 
     } catch (error) {
@@ -90,6 +97,10 @@ const toggleTaskCompletion = async (req, res, next) => {
 
         task.completed = !task.completed;
         await task.save();
+
+        if (task.completed) {
+            await awardXP(userId, 10); // 10 XP for completing a task
+        }
 
         // SYNC: Update in DailyPlan if exists
         const today = new Date().toISOString().split('T')[0];
