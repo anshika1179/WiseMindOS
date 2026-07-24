@@ -29,12 +29,15 @@ function mockFindNotebooks(notebooks) {
 }
 
 function expectedBulkOps(notebooks) {
-    return notebooks.map((notebook, index) => ({
-        updateOne: {
-            filter: { _id: notebook._id },
-            update: { $set: { order: index + 1 } },
-        },
-    }));
+    return notebooks.map((notebook, index) => {
+        if (notebook.order === index + 1) return null;
+        return {
+            updateOne: {
+                filter: { _id: notebook._id },
+                update: { $set: { order: index + 1 } },
+            },
+        };
+    }).filter(Boolean);
 }
 
 afterEach(() => {
@@ -50,7 +53,7 @@ test('reorderNotebooks compacts multiple gaps into a continuous sequence', async
         { _id: 'notebook-3', name: 'Ideas', order: 3 },
         { _id: 'notebook-5', name: 'Tasks', order: 5 },
     ];
-    let bulkOps;
+    let bulkOps = [];
 
     mockFindNotebooks(notebooks);
     replaceProperty(notebookModel, 'bulkWrite', async (ops) => {
@@ -68,7 +71,7 @@ test('reorderNotebooks shifts notebooks after deleting the first one', async () 
         { _id: 'notebook-2', name: 'Ideas', order: 2 },
         { _id: 'notebook-3', name: 'Tasks', order: 3 },
     ];
-    let bulkOps;
+    let bulkOps = [];
 
     mockFindNotebooks(notebooks);
     replaceProperty(notebookModel, 'bulkWrite', async (ops) => {
@@ -85,7 +88,7 @@ test('reorderNotebooks keeps trailing notebooks sequential after deleting the la
         { _id: 'notebook-1', name: 'Notes', order: 1 },
         { _id: 'notebook-2', name: 'Ideas', order: 2 },
     ];
-    let bulkOps;
+    let bulkOps = [];
 
     mockFindNotebooks(notebooks);
     replaceProperty(notebookModel, 'bulkWrite', async (ops) => {
@@ -122,7 +125,7 @@ test('deleteNotebook reorders remaining notebooks after any notebook is removed'
         { _id: 'notebook-3', name: 'Tasks', order: 3 },
         { _id: 'notebook-4', name: 'Ideas', order: 4 },
     ];
-    let bulkOps;
+    let bulkOps = [];
 
     let pageDeleteFilter;
 
@@ -131,19 +134,16 @@ test('deleteNotebook reorders remaining notebooks after any notebook is removed'
         pageDeleteFilter = filter;
     });
     replaceProperty(notebookModel, 'find', () => ({
-        sort: async () => remainingNotebooks.map((notebook, index) => ({
-            ...notebook,
-            order: index + 1,
-        })),
+        sort: async () => remainingNotebooks,
     }));
     replaceProperty(notebookModel, 'bulkWrite', async (ops) => {
         bulkOps = ops;
     });
 
     await deleteNotebook({
+        user: { id: 'user-1' },
         body: {
             notebookId: 'notebook-2',
-            userId: 'user-1',
         },
     }, res);
 
@@ -170,9 +170,9 @@ test('deleteNotebook only deletes pages owned by the authenticated user', async 
     replaceProperty(notebookModel, 'bulkWrite', async () => {});
 
     await deleteNotebook({
+        user: { id: 'user-42' },
         body: {
             notebookId: 'notebook-1',
-            userId: 'user-42',
         },
     }, res);
 
@@ -197,9 +197,9 @@ test('deleteNotebook does not reorder when the notebook does not exist', async (
     });
 
     await deleteNotebook({
+        user: { id: 'user-1' },
         body: {
             notebookId: 'missing-notebook',
-            userId: 'user-1',
         },
     }, res);
 
